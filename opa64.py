@@ -53,20 +53,21 @@ conv_multiline  = str.maketrans({ '\t': '', '\xa0': '', '\xad': '', '‐': '' })
 # hardcoded: doc url
 urls = {
 	'description': 'https://developer.arm.com/-/media/developer/products/architecture/armv8-a-architecture/2020-03/A64_ISA_xml_v86A-2020-03.tar.gz',
-	'intrinsics': 'https://static.docs.arm.com/ihi0073/e/IHI0073E_arm_neon_intrinsics_ref.pdf',
+	'intrinsics': 'https://documentation-service.arm.com/static/5f7b5205bcda971b14568107',
 	'table': {
-		'a78': 'https://static.docs.arm.com/102160/0300/Arm_Cortex-A78_Core_Software_Optimization_Guide.pdf',
-		'a77': 'https://static.docs.arm.com/swog011050/c/Arm_Cortex-A77_Software_Optimization_Guide.pdf',
-		'a76': 'https://static.docs.arm.com/swog307215/a/Arm_Cortex-A76_Software_Optimization_Guide.pdf',
-		'n1':  'https://static.docs.arm.com/swog309707/a/Arm_Neoverse_N1_Software_Optimization_Guide.pdf',
-		'a75': 'https://static.docs.arm.com/101398/0200/arm_cortex_a75_software_optimization_guide_v2.pdf',
-		'a72': 'https://static.docs.arm.com/uan0016/a/cortex_a72_software_optimization_guide_external.pdf',
+		'a78': 'https://documentation-service.arm.com/static/60a5413bd63d3c31550c391e',
+		'a72': 'https://documentation-service.arm.com/static/5ed75eeeca06a95ce53f93c7',
+		#'a53': 'https://static.docs.arm.com/epm128372/30/arm_cortex_a55_software_optimization_guide_v3.pdf'
+		#'a77': 'https://static.docs.arm.com/swog011050/c/Arm_Cortex-A77_Software_Optimization_Guide.pdf',
+		#'a76': 'https://static.docs.arm.com/swog307215/a/Arm_Cortex-A76_Software_Optimization_Guide.pdf',
+		#'n1':  'https://static.docs.arm.com/swog309707/a/Arm_Neoverse_N1_Software_Optimization_Guide.pdf',
+		#'a75': 'https://static.docs.arm.com/101398/0200/arm_cortex_a75_software_optimization_guide_v2.pdf',
 		# 'a65': 'https://static.docs.arm.com/swog010045/a/Cortex_A65_Software_Optimization_Guide_1.0.pdf',
 		# 'e1':  'https://static.docs.arm.com/swog466751/a/Neoverse_E1_Software_Optimization_Guide_1.0.pdf',
-		'a57': 'https://static.docs.arm.com/uan0015/b/Cortex_A57_Software_Optimization_Guide_external.pdf',
-		'a55': 'https://static.docs.arm.com/epm128372/30/arm_cortex_a55_software_optimization_guide_v3.pdf'
+		#'a57': 'https://static.docs.arm.com/uan0015/b/Cortex_A57_Software_Optimization_Guide_external.pdf',
 	},
-	'macros': 'https://static.docs.arm.com/101028/0011/ACLE_Q2_2020_101028_Final.pdf'
+	# Arm C Language Extensions  Documentation Release ACLE Q3 2020
+	'macros': 'https://documentation-service.arm.com/static/5f7b826ed3be967f7be46d22',
 }
 macro_page_range = '34-39'			# make sure the range covers entire list of feature macros
 
@@ -219,7 +220,7 @@ def parse_insn_table(path, page_range = 'all'):
 		return([x.strip(' ') for x in var_str.split(',')])
 
 	# load table
-	tables = camelot.read_pdf(path, pages = page_range)
+	tables = camelot.read_pdf(path + '.pdf', pages = page_range)
 
 	# parse table into opcode -> (form, latency, throughput, pipes, notes) mappings
 	insns = dict()
@@ -349,7 +350,7 @@ def parse_intrinsics(path, page_range = 'all'):
 		return(op_canon, op_raw, form, datatypes)
 
 	# load table
-	tables = camelot.read_pdf(path, pages = page_range)
+	tables = camelot.read_pdf(path + '.pdf', pages = page_range)
 
 	# parse table into opcode -> (intrinsics, arguments, mnemonic, result) mappings
 	insns = dict()
@@ -391,7 +392,7 @@ def parse_macros(path):
 		return(None, None)
 
 	# load table
-	tables = camelot.read_pdf(path, macro_page_range)
+	tables = camelot.read_pdf(path + '.pdf', macro_page_range)
 	macros = dict()
 	for t in tables:
 		# print(t.df)
@@ -558,9 +559,11 @@ def parse_one(doc, base = '.'):
 
 	def to_filepath_with_check(url, base):
 		path = to_filepath(url, base)
-		if not os.path.exists(path):
-			error('file not found: {} (might be \'--dir\' missing or wrong)'.format(path))
-			return(None)
+		# Manually convert to PDF extension
+		if not os.path.exists(path + '.pdf'):
+			if not os.path.exists(path):
+				error('file not found: {} (might be \'--dir\' missing or wrong)'.format(path))
+				return(None)
 		return(path)
 
 	if type(urls[doc[0]]) is str:
