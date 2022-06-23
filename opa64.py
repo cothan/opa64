@@ -59,7 +59,7 @@ urls = {
 		'a72': 'https://documentation-service.arm.com/static/5ed75eeeca06a95ce53f93c7',
 		#'a53': 'https://static.docs.arm.com/epm128372/30/arm_cortex_a55_software_optimization_guide_v3.pdf'
 		#'a77': 'https://static.docs.arm.com/swog011050/c/Arm_Cortex-A77_Software_Optimization_Guide.pdf',
-		#'a76': 'https://static.docs.arm.com/swog307215/a/Arm_Cortex-A76_Software_Optimization_Guide.pdf',
+		'a76': 'https://documentation-service.arm.com/static/61c1f57d2183326f217720de',
 		#'n1':  'https://static.docs.arm.com/swog309707/a/Arm_Neoverse_N1_Software_Optimization_Guide.pdf',
 		#'a75': 'https://static.docs.arm.com/101398/0200/arm_cortex_a75_software_optimization_guide_v2.pdf',
 		# 'a65': 'https://static.docs.arm.com/swog010045/a/Cortex_A65_Software_Optimization_Guide_1.0.pdf',
@@ -350,8 +350,8 @@ def parse_intrinsics(path, page_range = 'all'):
 		return(op_canon, op_raw, form, datatypes)
 
 	# load table
+	print("HERE", path)
 	tables = camelot.read_pdf(path + '.pdf', pages = page_range)
-
 	# parse table into opcode -> (intrinsics, arguments, mnemonic, result) mappings
 	insns = dict()
 	for t in tables:
@@ -624,7 +624,9 @@ def parse_all(doc_list, base = '.'):
 		doc_str = '.'.join(doc)
 		cmd = '{} {} parse --doc={} --dir={}'.format(sys.executable, os.path.realpath(sys.argv[0]), doc_str, base)
 		message('parsing {}... (command: {})'.format(doc_str, cmd))
+		print(f'cmd= {cmd}')
 		ret = subprocess.run(cmd, shell = True, capture_output = True)
+		print()
 		db  = json.loads(ret.stdout)
 
 		# update metadata db
