@@ -350,7 +350,6 @@ def parse_intrinsics(path, page_range = 'all'):
 		return(op_canon, op_raw, form, datatypes)
 
 	# load table
-	print("HERE", path)
 	tables = camelot.read_pdf(path + '.pdf', pages = page_range)
 	# parse table into opcode -> (intrinsics, arguments, mnemonic, result) mappings
 	insns = dict()
@@ -624,9 +623,7 @@ def parse_all(doc_list, base = '.'):
 		doc_str = '.'.join(doc)
 		cmd = '{} {} parse --doc={} --dir={}'.format(sys.executable, os.path.realpath(sys.argv[0]), doc_str, base)
 		message('parsing {}... (command: {})'.format(doc_str, cmd))
-		print(f'cmd= {cmd}')
 		ret = subprocess.run(cmd, shell = True, capture_output = True)
-		print()
 		db  = json.loads(ret.stdout)
 
 		# update metadata db
